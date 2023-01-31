@@ -2,7 +2,7 @@ package rsa
 
 import (
 	"bytes"
-	"digital-signature/prime"
+	"digital-signature-go/prime"
 	"encoding/hex"
 	"math/big"
 	"strconv"
@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-func Sign(plaintext string) string {
+func Sign(plaintext string) (string, *big.Int, *big.Int) {
 	var signs []string
 	h := sha3.New512()
 
@@ -22,18 +22,14 @@ func Sign(plaintext string) string {
 	chiper_blocks := strsplit(chiper, 4)
 
 	p, q := prime.GeneratePrimes(8)
-	n, _, d := prime.CreateKey(p, q)
+	n, e, d := prime.CreateKey(p, q)
 	for _, v := range chiper_blocks {
 		V, _ := strconv.ParseInt(v, 16, 64)
-		c := ModExp(big.NewInt(V), d, n)
-		hexval := c.Text(16)
+		M := new(big.Int).Exp(big.NewInt(V), d, n)
+		hexval := M.Text(16)
 		signs = append(signs, hexval)
 	}
-	return strings.Join(signs, ":")
-}
-
-func ModExp(v, d, n *big.Int) *big.Int {
-	return new(big.Int).Exp(v, d, n)
+	return strings.Join(signs, ":"), n, e
 }
 func strsplit(s string, n int) []string {
 	sub := ""
