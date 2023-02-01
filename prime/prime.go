@@ -2,6 +2,7 @@ package prime
 
 import (
 	crypto_rand "crypto/rand"
+	"fmt"
 	"math/big"
 )
 
@@ -18,7 +19,6 @@ func GeneratePrimes(bits int) (*big.Int, *big.Int) {
 			break
 		}
 	}
-
 	return p, q
 }
 
@@ -28,13 +28,21 @@ func CreateKey(p *big.Int, q *big.Int) (*big.Int, *big.Int, *big.Int) {
 	n := new(big.Int).Mul(p, q)
 	m := new(big.Int).Mul(p.Sub(p, one), q.Sub(q, one))
 
-	for i := new(big.Int).Set(two); i.Cmp(m) < 0; i.Add(i, one) {
+	for i := new(big.Int).Set(two); i.Cmp(m) == -1; i.Add(i, one) {
 		gcd := new(big.Int).GCD(nil, nil, i, m)
 		if gcd.Cmp(one) == 0 {
 			e = i
 			break
 		}
 	}
+
+	// for j := new(big.Int).Set(two); j.Cmp(m) == -1; j.Add(j, one) {
+	// 	exp := new(big.Int).Mul(j, e)
+	// 	if new(big.Int).Mod(exp, m).Cmp(one) == 0 {
+	// 		d = j
+	// 		break
+	// 	}
+	// }
 
 	var x, y big.Int
 	y.GCD(&x, nil, e, m)
@@ -45,15 +53,10 @@ func CreateKey(p *big.Int, q *big.Int) (*big.Int, *big.Int, *big.Int) {
 	} else {
 		d.Set(&x)
 	}
+	fmt.Println("m", m)
+	fmt.Println("n", n)
+	fmt.Println("e", e)
+	fmt.Println("d", d)
 
 	return n, e, d
 }
-
-// func main() {
-// 	start := time.Now()
-// 	p, q := GeneratePrimes(32)
-// 	CreateKey(p, q)
-// 	elapsed := time.Since(start)
-// 	fmt.Printf("Binomial took %s", elapsed)
-
-// }
