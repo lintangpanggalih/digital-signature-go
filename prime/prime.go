@@ -2,7 +2,6 @@ package prime
 
 import (
 	crypto_rand "crypto/rand"
-	"fmt"
 	"math/big"
 )
 
@@ -36,14 +35,6 @@ func CreateKey(p *big.Int, q *big.Int) (*big.Int, *big.Int, *big.Int) {
 		}
 	}
 
-	// for j := new(big.Int).Set(two); j.Cmp(m) == -1; j.Add(j, one) {
-	// 	exp := new(big.Int).Mul(j, e)
-	// 	if new(big.Int).Mod(exp, m).Cmp(one) == 0 {
-	// 		d = j
-	// 		break
-	// 	}
-	// }
-
 	var x, y big.Int
 	y.GCD(&x, nil, e, m)
 
@@ -53,10 +44,6 @@ func CreateKey(p *big.Int, q *big.Int) (*big.Int, *big.Int, *big.Int) {
 	} else {
 		d.Set(&x)
 	}
-	fmt.Println("m", m)
-	fmt.Println("n", n)
-	fmt.Println("e", e)
-	fmt.Println("d", d)
 
 	return n, e, d
 }
